@@ -66,18 +66,6 @@ function Server(host, port, key, cert)
         });
     }
 
-    function _json(req, res, next) {
-      if (req.method !== 'POST' && req.method !== 'PUT' && req.method !== 'PATCH') {
-          return next();
-      }
-
-      if ('application/json' !== req.headers['content-type']) {
-          return next();
-      }
-
-      bodyParser.json()(req, res, next)
-    }
-
     /**
      * Supports:
      * - { reply: { body: "data" }}
@@ -207,7 +195,9 @@ function Server(host, port, key, cert)
         var connectApp = connect()
             .use(_saveRequest)
             .use(_multipart)
-            .use(_json)
+            .use(bodyParser.json())
+            .use(bodyParser.text())
+            .use(bodyParser.urlencoded())
             .use(_handleMockedRequest)
             .use(_handleDefaultRequest);
 
